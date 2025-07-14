@@ -51,16 +51,24 @@
                       class="fas fa-minus"></i></button></div>
               </div>
               <div class="card-body table-responsive p-2">
-                <table class="table text-nowrap table-bordered table-hover"
+                <table class="table text-nowrap table-bordered table-hover table-sm"
                   th:attr="'data-table'=${selectedTable}" style = "border: 1px solid #dee2e6">
                   <thead>
                     <tr>
+                      <th th:text="act" style = "width:13px"> </th>
                       <th th:each="columnMap : ${selectedTableColumnList}" th:text="${columnMap['COLUMN_NAME']}"> </th>
                     </tr>
                   </thead>
                   <tbody>
                     <th:block th:each="valueMap : ${dataList}">
                       <tr th:data-item-id="${valueMap.get(primaryColumn)}" class="data-row">
+                        <td > 
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            
+                          </div>
+
+                        </td>
                         <td th:each="valueEntry : ${valueMap}" th:text="${valueEntry['value']}"> </td>
                       </tr>
                     </th:block>
@@ -270,18 +278,18 @@
     const table = document.querySelector('table');
     const rows = table.querySelectorAll('tr');
 
-    table.addEventListener('click', function (event) {
-      event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
-      event.stopPropagation();
-      const targetRow = event.target.closest('tr');
-      if (!targetRow) return;
+    //table.addEventListener('click', function (event) {
+      //event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
+      //event.stopPropagation();
+      //const targetRow = event.target.closest('tr');
+      //if (!targetRow) return;
       // 모든 tr의 active 클래스 제거
-      table.querySelectorAll('tr').forEach(r => r.classList.remove('active'));
+      //table.querySelectorAll('tr').forEach(r => r.classList.remove('active'));
       // 클릭된 tr에 active 클래스 추가
-      targetRow.classList.add('active');
-      prettyContextMenu.style.display = 'none';
+      //targetRow.classList.add('active');
+      //prettyContextMenu.style.display = 'none';
 
-    });
+    //});
 
     table.addEventListener('contextmenu', function (event) {
       event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
