@@ -1,0 +1,5 @@
+  var pasteComponent = container.createComponent(sourceComponent.data.type, true, false,sourceComponent.data);
+                        //A3Maker.cloneComponentForContextAction(pasteComponent, sourceComponent);
+                        console.log(sourceComponent)
+                        pasteComponent.parent.addComponent(pasteComponent);
+                        A3Maker.attchComponentForContextAction(pasteComponent);

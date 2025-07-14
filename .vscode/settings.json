@@ -1,0 +1,14 @@
+{
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/build": true,
+    "**/target": true,
+    "**/logs": true,
+    "**/a3maker": true,
+    "**/dist": true,
+    "**/css": true,
+    "**/plugins": true,
+}
+}

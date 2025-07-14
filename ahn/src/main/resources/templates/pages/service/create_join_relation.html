@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
+  
+  
+
+    <style>
+      html, body, #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gray-100 flex flex-col">
+
+    <!-- 헤더 -->
+    <header class="w-full bg-white shadow px-8 py-4 flex flex-col items-center border-b">
+      <div class="flex items-center gap-3">
+        <!-- 테이블 목록보기 셀렉트 박스 -->
+        <select class="border border-gray-300 rounded px-2 py-1 bg-gray-50 font-medium text-sm">
+          <option>테이블 목록보기</option>
+          <option>테이블1</option>
+          <option>테이블2</option>
+        </select>
+  
+        <!-- 테이블 추가 버튼 (작고 통계 스타일) -->
+        <button class="flex items-center gap-1 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold px-3 py-1.5 rounded shadow-sm border border-blue-600 text-sm hover:scale-105 transition-transform">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+          </svg>
+          테이블 추가
+        </button>
+  
+        <!-- 테이블 상자 (예시) -->
+        <div class="bg-gradient-to-r from-gray-200 to-gray-100 text-gray-700 px-5 py-1.5 rounded shadow-inner border border-gray-300 font-semibold flex items-center gap-1 text-sm">
+          <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+          </svg>
+          테이블 상자
+        </div>
+  
+        <!-- 관계그리기 버튼 (작고 통계 스타일) -->
+        <button class="flex items-center gap-1 bg-gradient-to-r from-green-500 to-green-700 text-white font-semibold px-3 py-1.5 rounded shadow-sm border border-green-600 text-sm hover:scale-105 transition-transform">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15A7 7 0 0 0 21 12a7 7 0 0 0-1.6-3.9M4.6 9A7 7 0 0 0 3 12c0 1.1.2 2.1.6 3"/>
+          </svg>
+          관계그리기
+        </button>
+      </div>
+    </header>
+  
+    <!-- 컨텐츠 영역: 상하좌우 적당한 여백, 거의 꽉 차게 -->
+    <main class="flex-1 bg-gray-200 flex items-center justify-center p-2">
+      <div class="w-full h-full bg-white shadow-xl border border-gray-300 flex flex-col">
+        <div class="flex-1 flex items-center justify-center canvas-container">
+          <canvas id = "canvas" style="width:100%; height:100%;"></canvas>
+      </div>
+    </main>
+    
+    <script >
+      const container = document.querySelector('.canvas-container'); // 부모 div
+      const canvasEl = document.getElementById('canvas');
+
+      // 부모 크기에 맞게 캔버스 크기 조정
+      function resizeCanvas() {
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        canvasEl.width = width;
+        canvasEl.height = height;
+        fabricCanvas.setWidth(width);
+        fabricCanvas.setHeight(height);
+      }
+
+      // fabric.js 캔버스 생성
+      const fabricCanvas = new fabric.Canvas('canvas');
+
+      // 최초 1회
+      resizeCanvas();
+
+      // 창 크기 변경 시 자동 조정
+      window.addEventListener('resize', resizeCanvas);
+      const text = new fabric.IText('텍스트를 입력하세요', {
+        left: 200,
+        top: 150,
+        fontSize: 24
+      });
+      fabricCanvas.add(text);
+
+      const itext1 = new fabric.IText('이름', { left: 0, top: 0, fontSize: 14, fill: 'blue', originX: 'left',
+      originY: 'top' });
+      const itext2 = new fabric.IText('나이', { left: 0, top: 20, fontSize: 14, fill: 'green', originX: 'left',
+      originY: 'top' });
+      const itext3 = new fabric.IText('주소', { left: 0, top: 40, fontSize: 14, fill: 'purple', originX: 'left',
+      originY: 'top' });
+
+      // 그룹으로 묶기
+      const group = new fabric.Group([itext1, itext2, itext3], {
+        left: 100,
+        top: 100,
+        originX: 'left', originY: 'top'
+      });
+
+      group.on('scaling', function(e) {
+  // 현재 스케일 값
+  const scaleX = group.scaleX;
+  const scaleY = group.scaleY;
+
+      // 그룹 내 텍스트 객체의 fontSize를 반대로 보정
+      group._objects.forEach(obj => {
+        if (obj.type === 'i-text' || obj.type === 'textbox') {
+          obj.fontSize = obj.originalFontSize / scaleY; // 또는 scaleX
+        }
+      });
+
+      // 그룹 자체는 항상 scale 1로 고정
+      group.scaleX = 1;
+      group.scaleY = 1;
+
+      // 그룹의 width/height만 조정
+      group.width *= scaleX;
+      group.height *= scaleY;
+
+      group.canvas.requestRenderAll();
+    });
+
+    // 최초 생성 시 원본 fontSize 저장
+    group._objects.forEach(obj => {
+      if (obj.type === 'i-text' || obj.type === 'textbox') {
+        obj.originalFontSize = obj.fontSize;
+      }
+    });
+
+      fabricCanvas.add(group);
+    </script>
+  </body>
+</html>

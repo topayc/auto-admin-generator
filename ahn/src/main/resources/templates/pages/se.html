@@ -1,0 +1,32 @@
+
+<div class="row">
+    <div class="col-12">
+        <div class  = "card small card-success">
+            <div class="card-header" style = "background-color: #343a40;">
+                <h3 class="card-title" style = "font-size: 13px;" th:text = "${'[TABLE]   ' +  tableEntry.key}"></h3>
+                <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus'"></i>
+                </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-head-fixed text-nowrap table-sm table-bordered table-sm">
+                <thead>
+                <tr>
+                    <th style = "background-color: #dedede;">COLUMN NAME</th>
+                    <th style = "background-color: #dedede;">COLUMN KEY</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight:bold;background-color: #efefef;">AAA</td>
+                        <td style="font-weight:bold;background-color: #efefef;">BBB</td>
+                        <td style="font-weight:bold;background-color: #efefef;" >CCC</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
