@@ -122,7 +122,7 @@
 
     /* ✨ 예쁜 커스텀 컨텍스트 메뉴 스타일 ✨ */
     .pretty-context-menu {
-      position: absolute;
+      position: fixed;
       background-color: #ffffff;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
       list-style: none;
@@ -286,14 +286,18 @@
     //});
 
     table.addEventListener('contextmenu', function (event) {
-        const fixedMenuItems = [
-          // { label: '생성', action: 'create' },
-          { label: 'More Details', action: 'more_details' , iconClass : "fas fa-plus-square"},
-          { label: 'Edit', action: 'edit', iconClass : "fas fa-edit" },
-          { label: 'Delete', action: 'delete', iconClass : "fas fa-minus-circle" },
-          { label: 'Select', action: 'select', iconClass : "fas fa-check-square" }
 
-        ];
+      event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
+      event.stopPropagation();
+
+      const fixedMenuItems = [
+        // { label: '생성', action: 'create' },
+        { label: 'More Details', action: 'more_details' , iconClass : "fas fa-plus-square"},
+        { label: 'Edit', action: 'edit', iconClass : "fas fa-edit" },
+        { label: 'Delete', action: 'delete', iconClass : "fas fa-minus-circle" },
+        { label: 'Select', action: 'select', iconClass : "fas fa-check-square" }
+
+      ];
 
       let row = event.target.closest('tr');
       if (row && row.rowIndex !== 0) {
@@ -305,13 +309,12 @@
             fixedMenuItems[3].action  = "deselect";
             fixedMenuItems[3].iconClass  = "far fa-square";
           }
-        
         }
       }
 
-      event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
-      event.stopPropagation();
+     
       prettyContextMenu.style.display = 'none';
+
       const targetRow = event.target.closest('tr');
       if (!targetRow) return;
       // 모든 tr의 active 클래스 제거
@@ -326,7 +329,7 @@
 
       prettyContextMenu.innerHTML = ''; // 메뉴 내용 초기화
 
-      // ✨ 1. 메뉴 헤더 추가 ✨
+      //1. 메뉴 헤더 추가 ✨
       const menuHeader = document.createElement('div');
       menuHeader.classList.add('menu-header');
       menuHeader.textContent = `[${selectedTable}  ${currentClickedItemId}] 액션 메뉴` || '메뉴'; // 클릭한 아이템의 이름 또는 기본값
@@ -416,10 +419,39 @@
         });
       }
 
-      prettyContextMenu.style.left = event.clientX + 'px';
-      prettyContextMenu.style.top = (event.clientY + window.scrollY) + 'px';
+      prettyContextMenu.style.visibility = 'hidden';
       prettyContextMenu.style.display = 'block';
+      prettyContextMenu.style.left = '-9999px';
+      prettyContextMenu.style.top = '-9999px';
+      
 
+      const menuWidth = prettyContextMenu.offsetWidth;
+      const menuHeight = prettyContextMenu.offsetHeight;
+      
+      const winWidth = window.innerWidth;
+      const winHeight = window.innerHeight;
+
+      let x = event.clientX;
+      let y = event.clientY;
+      
+       if (x + menuWidth > winWidth) {
+        x = x - menuWidth;
+        if (x < 0) x = 0; // 왼쪽 넘어가는 것도 방지
+      }
+
+      if (y + menuHeight > winHeight) {
+        y = y - menuHeight;
+        if (y < 0) y = 0; // 위쪽 넘어가는 것도 방지
+      }
+
+      prettyContextMenu.style.animation = "none";  // 초기화
+      prettyContextMenu.offsetHeight;              // 리플로우 유도
+      prettyContextMenu.style.animation = "fadeIn 0.2s ease"; // 다시 적용
+
+      prettyContextMenu.style.left = x + 'px';
+      prettyContextMenu.style.top = y  + 'px';
+      prettyContextMenu.style.display = 'block';
+      prettyContextMenu.style.visibility = 'visible';
     });
 
 
