@@ -26,14 +26,14 @@
                   </div>
                 </div>
                 <div class="card-footer" style="padding-left : 7px">
-                  <button type="submit" class="btn btn-default btn-xs" style="font-size : 0.7rem">SEARCH</button>&nbsp;
-                  <button type="reset" class="btn btn-default btn-xs"
+                  <button type="submit" class="btn btn-primary btn-xs rounded-3" style="font-size : 0.7rem">SEARCH</button>&nbsp;
+                  <button type="reset" class="btn btn-primary btn-xs rounded-3"
                     style="font-size : 0.7rem">&nbsp;RESET&nbsp;</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <button type="button" class="btn btn-success    btn-xs" style="font-size : 0.7rem"
+                  <button type="button" class="btn btn-success btn-xs rounded-3" style="font-size : 0.7rem"
                     th:attr="onclick=|openInsertItemModal(event, this,'${selectedTable}')|">CREATE</button>&nbsp;
-                  <button type="button" class="btn btn-success btn-xs" style="font-size : 0.7rem"
-                    th:attr="onclick=|openModifyItemModal(event, this,'${selectedTable}')|">EDIT</button>
-                  <button type="button" class="btn btn-danger btn-xs" style="font-size : 0.7rem"
+                  <button type="button" class="btn btn-success btn-xs rounded-3" style="font-size : 0.7rem"
+                    th:attr="onclick=|openModifyItemModal(event, this,'${selectedTable}')|">MODIFY</button>
+                  <button type="button" class="btn btn-danger btn-xs rounded-3" style="font-size : 0.7rem"
                     th:attr="onclick=|openRemoveItemModal(event, this,'${selectedTable}')|">DELETE</button>
                 </div>
               </div>
