@@ -219,7 +219,7 @@
 
     function openModifyItemModal(event, elem, tableName) {
       $('#table-insert-update-modal').modal();
-      $('#table-insert-update-modal .modal-title').html(tableName.toUpperCase() + " 추가");
+      $('#table-insert-update-modal .modal-title').html(tableName.toUpperCase() + " 수정");
 
       //var param = {tableName : tableName};
       //$('#table-insert-update-modal .content').load("/get_form?"+ toQueryString(param));
@@ -267,13 +267,7 @@
     console.log(dataList);
 
     //우클릭시 뜨는 창의 메뉴 
-    const fixedMenuItems = [
-      // { label: '생성', action: 'create' },
-      { label: 'More Details', action: 'more_details' },
-      { label: 'Edit', action: 'edit' },
-      { label: 'Delete', action: 'delete' }
-
-    ];
+  
 
     const table = document.querySelector('table');
     const rows = table.querySelectorAll('tr');
@@ -292,6 +286,29 @@
     //});
 
     table.addEventListener('contextmenu', function (event) {
+        const fixedMenuItems = [
+          // { label: '생성', action: 'create' },
+          { label: 'More Details', action: 'more_details' , iconClass : "fas fa-plus-square"},
+          { label: 'Edit', action: 'edit', iconClass : "fas fa-edit" },
+          { label: 'Delete', action: 'delete', iconClass : "fas fa-minus-circle" },
+          { label: 'Select', action: 'select', iconClass : "fas fa-check-square" }
+
+        ];
+
+      let row = event.target.closest('tr');
+      if (row && row.rowIndex !== 0) {
+        // 해당 행 안의 checkbox를 찾음
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        if (checkbox ) {
+          if (checkbox.checked == true){
+            fixedMenuItems[3].label = "Deselect";
+            fixedMenuItems[3].action  = "deselect";
+            fixedMenuItems[3].iconClass  = "far fa-square";
+          }
+        
+        }
+      }
+
       event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
       event.stopPropagation();
       prettyContextMenu.style.display = 'none';
@@ -312,16 +329,62 @@
       // ✨ 1. 메뉴 헤더 추가 ✨
       const menuHeader = document.createElement('div');
       menuHeader.classList.add('menu-header');
-      menuHeader.textContent = `[${selectedTable}] ${currentClickedItemId} 선택` || '메뉴'; // 클릭한 아이템의 이름 또는 기본값
+      menuHeader.textContent = `[${selectedTable}  ${currentClickedItemId}] 액션 메뉴` || '메뉴'; // 클릭한 아이템의 이름 또는 기본값
       prettyContextMenu.appendChild(menuHeader);
 
       // 2. 고정 메뉴 항목 추가 (헤더 다음에 추가)
       fixedMenuItems.forEach(menuItem => {
         const li = document.createElement('li');
-        li.textContent = menuItem.label;
-        li.dataset.action = menuItem.action;
-        li.dataset.itemId = currentClickedItemId;
+        
+        const i = document.createElement("i");
+        i.setAttribute('aria-hidden', 'true');
+        i.className = menuItem.iconClass;
+        i.style.marginRight = "8px";
+        li.appendChild(i);
+       
+        const span = document.createElement("span");
+        span.textContent = menuItem.label;
+        span.dataset.action = menuItem.action;
+        span.dataset.itemId = currentClickedItemId;
+        li.appendChild(span);
+
         prettyContextMenu.appendChild(li);
+
+        li.addEventListener("click", function(e){
+          switch (menuItem.action){
+            case "more_details":
+            break;
+            
+            case "edit":
+              openModifyItemModal(e, this,selectedTable);
+              break;
+            
+            case "delete":
+              break;
+            
+            case "select":
+             let row1 = event.target.closest('tr');
+             if (row && row.rowIndex !== 0) {
+              // 해당 행 안의 checkbox를 찾음
+              const checkbox = row.querySelector('input[type="checkbox"]');
+              if (checkbox) {
+                checkbox.checked =  true; // 선택 상태로 변경
+              }
+             }
+             break;
+
+              
+            case "deselect":
+             let row2 = event.target.closest('tr');
+             if (row && row.rowIndex !== 0) {
+              // 해당 행 안의 checkbox를 찾음
+              const checkbox = row.querySelector('input[type="checkbox"]');
+             checkbox.checked =  false // 선택 상태로 변경
+            }
+            break;
+
+          }
+        })
       });
 
       // 3. 커스텀 메뉴 항목 추가 (있을 경우)
@@ -348,6 +411,7 @@
           li.textContent = menuItem.label;
           li.dataset.action = menuItem.action;
           li.dataset.itemId = currentClickedItemId;
+         
           prettyContextMenu.appendChild(li);
         });
       }
