@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Database Meta | Auto Admin Panel Generator</title>
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper container" style="margin-top:40px">
+    <div class="row">
+      <div class="col-12">
+        <div class="card alert alert-danger">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+              Alerts
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class=" alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+               에러가 발생했습니다. 아래의 내용을 참고 바랍니다.</br>
+            
+            <th:block th:text="${exception}"></th:block></br>
+            <h8 th:text="${errorMessage}"></h8></br></br>
+
+            <h8>아래의 링크를 눌러서 프로젝트 설정을 다시 해주세요</h8></br></br>
+            <h7><a href="/service/create">프로젝트 생성으로 돌아가기</a></h7>
+          </div>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+</body>
+
+</html>

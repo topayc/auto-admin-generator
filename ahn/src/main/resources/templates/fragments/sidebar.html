@@ -1,0 +1,136 @@
+<th:block th:fragment="sidebar">
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/" class="brand-link">
+      <img src="/assets/logo.png" alt="Auto Admin Generator" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light small" th:text = "${session.sessionInfo.user.projectName}" ></span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar" style = "font-size : 0.9rem">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block" th:text = "${session.sessionInfo.user.name}" style = "font-size:1rem" ></a>
+        </div>
+      </div>
+      <div class="user-panel mt-1 pb-2 mb-1 d-flex align-items-center justify-content-center" >
+          <!-- <div class = "col-6 flex-fill">
+            <div class="info">
+              <a th:href="@{/service/create}"  class="d-block" style = "font-size:0.9rem" >New Project</a>
+            </div>
+          </div> -->
+            <div >
+              <a th:href="@{/service/create}" class="d-block  nav-link"  style = "margin-left : 8px">
+                <!-- <i class="fas fa-camera"></i> -->
+                Add Project</a>
+            </div>
+       
+      </div>
+      
+      <!-- SidebarSearch Form -->
+      <!-- <div class="form-inline">
+        <div class="input-group" data-widget="sidebar-search">
+          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+          <div class="input-group-append">
+            <button class="btn btn-sidebar">
+              <i class="fas fa-search fa-fw"></i>
+            </button>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2 text-sm">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          
+          <li class="nav-item" id = "dashboard" >
+            <a th:href="@{/service/readme.md}" class="nav-link">
+              <i class="fas fa-bullhorn nav-icon"></i>
+              <p>Read Me</p>
+            </a>
+          </li>
+
+          <li class="nav-item" id = "dashboard">
+            <a th:href="@{/service/dashboard/{uuid}(uuid=${session.sessionInfo.user.uuid})}" class="nav-link">
+              <i class="fa fa-cog nav-icon"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+
+          <li class="nav-item" id = "create">
+          
+          </li>
+
+          <li class="nav-item"  id = "project_info">
+            <a th:href="@{/service/project_info/{uuid}(uuid=${session.sessionInfo.user.uuid})}" class="nav-link">
+              <i class="nav-icon fas fa-edit"></i>
+              <p>Project Info</p>
+            </a>
+          </li>
+
+          <li class="nav-item" id= "meta">
+            <a th:href="@{/service/meta/{uuid}(uuid=${session.sessionInfo.user.uuid})}" class="nav-link">
+              <i class="nav-icon fas fa-database"></i>
+              <p>Database Metadata</p>
+            </a>
+          </li>
+          
+          <li class="nav-item" id= "meta">
+            <a th:href="@{/service/meta_field_summary/{uuid}(uuid=${session.sessionInfo.user.uuid})}"class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>Meta Summary</p>
+            </a>
+          </li>
+          <li class="nav-item has-treeview menu-is-opening menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p th:text="|Tables   - ${#maps.size(tables)} Available|">
+                
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item pl-3" th:each = "tableEntry : ${tables}" >
+                <a th:href="@{/service/search/{uuid}(uuid=${session.sessionInfo.user.uuid}, tb=${tableEntry.key})}" class="nav-link text-sm">
+                  <i class="nav-icon fas fa-book"></i>
+                  <p th:text = "${tableEntry.key}"></p>
+                </a>
+              </li>
+             </ul>
+<!-- 
+             <li class="nav-item" id= "join_view">
+              <a href="/service/create_join_relation" class="nav-link">
+                <i class="fa fa-database nav-icon"></i>
+                <p>Create Join View</p>
+              </a>
+            </li> -->
+            <li class="nav-item" id= "editor">
+              <a th:href="@{/service/editor/{uuid}(uuid=${session.sessionInfo.user.uuid})}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>Editor</p>
+              </a>
+            </li>
+
+          </li>
+        </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const menuItems = document.querySelectorAll(".nav .nav-item a");
+      const currentPath = window.location.pathname;
+      menuItems.forEach(function(link) {
+        const li = link.parentElement;
+        if (link.getAttribute('href') === currentPath) {
+          link.classList.add("active");
+        }
+      });
+    });
+  </script>
+</th:block>

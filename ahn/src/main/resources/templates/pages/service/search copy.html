@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/layout}">
+<th:block layout:fragment="content">
+
+  <div class="content-wrapper mt-3" style="min-height: 1604.44px;">
+    <section class="content">
+      <div class="container-fluid">
+        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+          Button with data-bs-target
+          </button>
+        <div class="row offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+          <div class="col-12">
+            <form action="" method="">
+              <div class="card card-primary shadow-none"><!-- 딛힌 상태로 두려면 클래스 추가 collapsed-card -->
+                <div class="card-header" style="background-color: #343a40;height:45px">
+                  <span class="card-title" style="font-size : 13px"
+                    th:text="${#strings.toUpperCase(selectedTable) + ' 상세 검색'}">상세 검색</span>
+
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="card-body light-text" style="padding-top: 7px;padding-bottom: 1px;">
+                  <div class="row" id="search_condition" style="white-space: pre;">
+                  </div>
+                </div>
+                <div class="card-footer" style="padding-left : 7px">
+                  <button type="submit" class="btn btn-default btn-xs" style="font-size : 0.7rem">SEARCH</button>&nbsp;
+                  <button type="reset" class="btn btn-default btn-xs"
+                    style="font-size : 0.7rem">&nbsp;RESET&nbsp;</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <button type="button" class="btn btn-success    btn-xs" style="font-size : 0.7rem"
+                    th:attr="onclick=|openInsertItemModal(event, this,'${selectedTable}')|">CREATE</button>&nbsp;
+                  <button type="button" class="btn btn-success btn-xs" style="font-size : 0.7rem"
+                    th:attr="onclick=|openModifyItemModal(event, this,'${selectedTable}')|">EDIT</button>
+                  <button type="button" class="btn btn-danger btn-xs" style="font-size : 0.7rem"
+                    th:attr="onclick=|openRemoveItemModal(event, this,'${selectedTable}')|">DELETE</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card small card-success">
+              <div class="card-header" style="background-color: #343a40;">
+                <h3 class="card-title" style="font-size: 13px;white-space: pre;"
+                  th:utext="|${selectedTable.toUpperCase()}|"></h3>
+                <div class="card-tools"><button type="button" data-card-widget="collapse" class="btn btn-tool"><i
+                      class="fas fa-minus"></i></button></div>
+              </div>
+              <div class="card-body table-responsive p-0">
+                <table class="table text-nowrap table-bordered table-hover table-sm"
+                  th:attr="'data-table'=${selectedTable}">
+                  <thead>
+                    <tr>
+                      <th th:each="columnMap : ${selectedTableColumnList}" th:text="${columnMap['COLUMN_NAME']}"> </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <th:block th:each="valueMap : ${dataList}">
+                      <tr th:data-item-id="${valueMap.get(primaryColumn)}" class="data-row">
+                        <td th:each="valueEntry : ${valueMap}" th:text="${valueEntry['value']}"> </td>
+                      </tr>
+                    </th:block>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 아이템 인서트 수정 작업 모달 -->
+  <div class="container-fluid modal fade modal-dialog-centered" id="table-insert-update-modal" style="display: none;"
+    aria-hidden="true">
+    <!-- <div class="modal-dialog modal-lg"> -->
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #343a40;color : white;height:50px">
+          <h6 class="modal-title">Default Modal</h6>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row content"></div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-primary btn-sm" id="modal-action-ok" data-dismiss="modal">생성</button>
+          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul id="prettyContextMenu" class="pretty-context-menu">
+  </ul>
+
+
+  <style>
+    tr.active,
+    tr.active>td {
+      background-color: #4ba3eb !important;
+      /* 원하는 색상으로 변경 */
+      color: white;
+    }
+
+    /* ✨ 예쁜 커스텀 컨텍스트 메뉴 스타일 ✨ */
+    .pretty-context-menu {
+      position: absolute;
+      background-color: #ffffff;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: none;
+      z-index: 1000;
+      border-radius: 8px;
+      overflow: hidden;
+      min-width: 12%;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    /* 메뉴 헤더 스타일 */
+    .pretty-context-menu .menu-header {
+      padding: 10px 15px;
+      background-color: #f0f8ff;
+      /* 연한 파란색 배경 */
+      color: #007bff;
+      /* 파란색 텍스트 */
+      font-weight: bold;
+      font-size: 0.9em;
+      border-bottom: 1px solid #e2e6ea;
+      /* 아래쪽 테두리 */
+    }
+
+    .pretty-context-menu li {
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 0.8em;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .pretty-context-menu li:last-child {
+      border-bottom: none;
+    }
+
+    .pretty-context-menu li:hover {
+      background-color: #e9f5ff;
+      color: #007bff;
+      font-weight: bold
+    }
+
+    /* 구분선 스타일 */
+    .pretty-context-menu .menu-separator {
+      border-top: 1px solid #dee2e6;
+      margin: 5px 0;
+    }
+
+    /* 애니메이션 키프레임 */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+
+    // 타임리프 리스트를 JS 변수에 할당
+    var selectedTableColumnList = /*[[${selectedTableColumnList}]]*/[];
+    var selectedTable = /*[[${selectedTable}]]*/[];
+    var dataList = /*[[${dataList}]]*/[];
+
+    function openInsertItemModal(event, elem, tableName) {
+
+      $('#table-insert-update-modal').modal();
+      $('#table-insert-update-modal .modal-title').html(tableName.toUpperCase() + " 추가");
+
+      //var param = {tableName : tableName};
+      //$('#table-insert-update-modal .content').load("/get_form?"+ toQueryString(param));
+      var inputTagGenerator = new InputTagGenerator(
+        selectedTable,
+        selectedTableColumnList,
+        "#table-insert-update-modal .content",
+        "col-sm-6 col-md-4 col-12",
+        "CREATE");
+      inputTagGenerator.mount();
+
+      const button = document.querySelector('#table-insert-update-modal #modal-action-ok');
+      button.addEventListener('click', function () {
+        alert('서버로 전송');
+      }, { once: true });
+    }
+
+    function openModifyItemModal(event, elem, tableName) {
+      $('#table-insert-update-modal').modal();
+      $('#table-insert-update-modal .modal-title').html(tableName.toUpperCase() + " 추가");
+
+      //var param = {tableName : tableName};
+      //$('#table-insert-update-modal .content').load("/get_form?"+ toQueryString(param));
+      var inputTagGenerator = new InputTagGenerator(
+        selectedTable,
+        selectedTableColumnList,
+        "#table-insert-update-modal .content",
+        "col-sm-6 col-md-4 col-12",
+        "UPDATE");
+      inputTagGenerator.mount();
+
+      const button = document.querySelector('#table-insert-update-modal #modal-action-ok');
+      button.addEventListener('click', function () {
+        alert('서버로 전송');
+      }, { once: true });
+    }
+
+    function openRemoveItemModal(event, elem, tableName) {
+      alert("삭제합니다");
+    }
+
+    //객체를 쿼리 스트링으로 변환
+    function toQueryString(params) {
+      return new URLSearchParams(params).toString();
+    }
+
+  </script>
+
+  <script src="/js/input_tag_generator.min.js"></script>
+
+  <script th:inline="javascript">
+
+    let currentClickedItemId = null; // 현재 클릭된 아이템의 ID를 저장할 변수
+
+    // DOMContentLoaded 이벤트 리스너 추가
+    var inputTagGenerator = new InputTagGenerator(
+      selectedTable,
+      selectedTableColumnList,
+      "#search_condition",
+      "col-sm-4 col-md-2 col-12",
+      "VIEW");
+    inputTagGenerator.mount();
+    //console.log(selectedTableColumnList);
+    //console.log(selectedTable);
+    console.log(dataList);
+
+    //우클릭시 뜨는 창의 메뉴 
+    const fixedMenuItems = [
+      // { label: '생성', action: 'create' },
+      { label: 'More Details', action: 'more_details' },
+      { label: 'Edit', action: 'edit' },
+      { label: 'Delete', action: 'delete' }
+
+    ];
+
+    const table = document.querySelector('table');
+    const rows = table.querySelectorAll('tr');
+
+    table.addEventListener('click', function (event) {
+      event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
+      event.stopPropagation();
+      const targetRow = event.target.closest('tr');
+      if (!targetRow) return;
+      // 모든 tr의 active 클래스 제거
+      table.querySelectorAll('tr').forEach(r => r.classList.remove('active'));
+      // 클릭된 tr에 active 클래스 추가
+      targetRow.classList.add('active');
+      prettyContextMenu.style.display = 'none';
+
+    });
+
+    table.addEventListener('contextmenu', function (event) {
+      event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
+      event.stopPropagation();
+      prettyContextMenu.style.display = 'none';
+      const targetRow = event.target.closest('tr');
+      if (!targetRow) return;
+      // 모든 tr의 active 클래스 제거
+      table.querySelectorAll('tr').forEach(r => r.classList.remove('active'));
+
+      // 클릭된 tr에 active 클래스 추가
+      targetRow.classList.add('active');
+
+      currentClickedItemId = targetRow.dataset.itemId;
+      const itemName = this.dataset.itemName; // 클릭된 아이템의 이름 가져오기
+      const customMenuJson = this.dataset.customMenu;
+
+      prettyContextMenu.innerHTML = ''; // 메뉴 내용 초기화
+
+      // ✨ 1. 메뉴 헤더 추가 ✨
+      const menuHeader = document.createElement('div');
+      menuHeader.classList.add('menu-header');
+      menuHeader.textContent = `[${selectedTable}] ${currentClickedItemId} 선택` || '메뉴'; // 클릭한 아이템의 이름 또는 기본값
+      prettyContextMenu.appendChild(menuHeader);
+
+      // 2. 고정 메뉴 항목 추가 (헤더 다음에 추가)
+      fixedMenuItems.forEach(menuItem => {
+        const li = document.createElement('li');
+        li.textContent = menuItem.label;
+        li.dataset.action = menuItem.action;
+        li.dataset.itemId = currentClickedItemId;
+        prettyContextMenu.appendChild(li);
+      });
+
+      // 3. 커스텀 메뉴 항목 추가 (있을 경우)
+      let customMenuItems = [
+        // { label: '생성', action: 'create' },
+        { label: 'Custom Action1', action: 'more_details' },
+        { label: 'Custom Action2', action: 'edit' },
+        { label: 'Custom Action3', action: 'delete' }
+
+      ];
+      try {
+        //customMenuItems = JSON.parse(customMenuJson || '[]');
+      } catch (e) {
+        console.error('Failed to parse custom menu JSON:', e);
+      }
+
+      if (customMenuItems.length > 0) {
+        const separator = document.createElement('li');
+        separator.classList.add('menu-separator');
+        //prettyContextMenu.appendChild(separator);
+
+        customMenuItems.forEach(menuItem => {
+          const li = document.createElement('li');
+          li.textContent = menuItem.label;
+          li.dataset.action = menuItem.action;
+          li.dataset.itemId = currentClickedItemId;
+          prettyContextMenu.appendChild(li);
+        });
+      }
+
+      prettyContextMenu.style.left = event.clientX + 'px';
+      prettyContextMenu.style.top = (event.clientY + window.scrollY) + 'px';
+      prettyContextMenu.style.display = 'block';
+
+    });
+
+
+    document.addEventListener('click', function () {
+      prettyContextMenu.style.display = 'none';
+      rows.forEach(r => r.classList.remove('active'));
+    });
+
+
+
+
+
+  </script>
+</th:block>
+
+</html>

@@ -1,0 +1,161 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Database Meta | Auto Admin Panel Generator</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <style>
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    .register-box {
+      width: 100%;
+      max-width: 500px;
+      margin: 40px auto;
+      box-sizing: border-box;
+      padding: 0 10px;
+    }
+    .card {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-control, .form-select {
+      box-sizing: border-box;
+      width: 100%;
+    }
+    /* 모바일에서 폰트 크기 살짝 줄이기 */
+    @media (max-width: 400px) {
+      .register-logo { font-size: 1rem; }
+      .card-body { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+
+<body class="register-page"
+  style="min-height: 300px; background: linear-gradient(135deg, #1e2026 0%, #3a3d40 50%, #574b90 100%);">
+  <div class="register-box container-fluid" >
+    <div class="register-logo" style="font-size:1.2rem;color : #a6a1a1;">
+      <b>Project </b>Create</br>
+      <span style="font-size : 0.65rem"><b>이 프로그램은 자체 DB를 사용하지 않으며, 입력한 모든 정보는 저장되지 않으며 외부로 전송되지 않습니다</b></span>
+    </div>
+
+    <div class="card">
+      <div style="height:4px; background-color:#787e87"></div>
+      <div style="margin-top: 10px; margin-left : 20px;" th:if="${error == true}">
+        <span style="font-weight: 400; color: red;" class = "small">
+          <strong class ="small">[Error Ocured] 입력값이 누락되었거나 잘못된 입력이 있습니다. 확인해주세요</strong>
+        </span>
+      </div>
+
+      <div class="card-body register-card-body" style = "padding-top:15px">
+        <form th:action="@{/service/create}" th:object="${connectionInfo}" method="post">
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <!-- <label for="projectName" class="form-label small" style="font-weight: 400">ID generated solely for
+                  session management </label> -->
+                <input readonly type="hidden" name="uuid" class="form-control form-control-sm" id="uuid" placeholder=""
+                  th:field="*{uuid}" />
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label for="projectName" class="form-label small" style="font-weight: 400">Project Name</label>
+                <input type="text" name="projectName" class="form-control form-control-sm" id="projectName"
+                  placeholder="" th:field="*{projectName}" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="form-group">
+                <label for="url" class="form-label small" style="font-weight: 400">Database Url</label>
+                <input type="text" name="url" class="form-control form-control-sm" id="url" placeholder=""
+                  th:field="*{url}" />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="name" class="form-label small" style="font-weight: 400">Database User Name</label>
+                <input type="text" name="userName" class="form-control form-control-sm" id="userName" placeholder=""
+                  th:field="*{userName}" />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="password" class="form-label small" style="font-weight: 400">Database User Password</label>
+                <input type="password" name="password" class="form-control form-control-sm" id="password" placeholder=""
+                  th:field="*{password}" />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="dbms" class="form-label small" style="font-weight: 400">Select DBMS</label>
+                <select class="form-control form-control-sm" id="dbms" th:field="*{dbms}">
+                  <option value="mysql">MYSQL</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="driverClassName" class="form-label small" style="font-weight: 400">Driver Class Name</label>
+                <select class="form-control form-control-sm" id="driverClassName" th:field="*{driverClassName}">
+                  <option th:value="${connectionInfo.driverClassName}" th:text="${connectionInfo.driverClassName}">Mysql
+                    Driver</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="css" class="form-label small" style="font-weight: 400">Select CSS Framework</label>
+                <select class="form-control form-control-sm" id="css" th:field="*{css}">
+                  <option th:value="${connectionInfo.css}" th:text="${connectionInfo.css}"></option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="name" class="form-label small" style="font-weight: 400">ETC</label>
+                <input type="text" name="etc" class="form-control form-control-sm" id="etc"
+                  placeholder="Anything else" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-8"></div>
+            <div class="col-4">
+              <button type="submit" class="btn btn-primary btn-block btn-sm">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- /.form-box -->
+    </div><!-- /.card -->
+  </div>
+  <!-- /.register-box -->
+
+  <!-- jQuery -->
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="../../dist/js/adminlte.min.js"></script>
+</body>
+</html>

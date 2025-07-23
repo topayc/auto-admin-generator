@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<th:block layout:fragment="content">
+  
+<div class="content-wrapper">
+  <!-- Main content -->
+  <section class = "content" style="margin-top:15px"></section>
+    <div class="container-fluid">
+      <!-- Small boxes (Stat box) -->
+      <div class="col-12 small">
+        <!-- db table list -->
+        <div class="col-12">
+          <div th:each = "tableEntry,stat : ${tables}" th:id = "${tableEntry.key}" th:class="(${stat.index == 0} ? 'card card-success card-danger' : 'card card-success collapsed collapsed-card card-danger')">
+            <div class="card-header" style = "background-color: #343a40;">
+              <h3 class="card-title" style = "font-size: 13px;" th:text = "${'[TABLE]   ' +  tableEntry.key}"></h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i th:class="${stat.index == 0} ? 'fas fa-minus' : 'fas fa-plus'"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body" th:style="(${stat.index == 0} ? 'none' : 'block')" >
+              <div class="row">
+                <div class="col-12">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-default text-xs" th:attr="onclick=|constraintSelect(event, this,'${tableEntry.key}','PRIMARY')|">&nbsp;PRIMARY KEY&nbsp;</button>
+                    <button type="button" class="btn btn-default text-xs" th:attr="onclick=|constraintSelect(event, this,'${tableEntry.key}','FOREIGN')|">&nbsp;FOREIGN KEY&nbsp;</button>
+                    <button type="button" class="btn btn-default text-xs" th:attr="onclick=|constraintSelect(event, this,'${tableEntry.key}','UNIQUE')|">&nbsp;UNIQUE KEY&nbsp;</button>
+                    <button type="button" class="btn btn-default text-xs" th:attr="onclick=|constraintSelect(event, this,'${tableEntry.key}','INDEX')|">&nbsp;INDEX&nbsp;</button>
+                  </div>
+                </div>
+              </div>
+            </br>
+              <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-body table-responsive p-0">
+                      <table class="table text-nowrap table-bordered table-hover table-sm">
+                        <thead>
+                          <tr>
+                            <th style = "background-color: #dedede;">COLUMN NAME</th>
+                            <th style = "background-color: #dedede;">COLUMN KEY</th>
+                            <th style = "background-color: #dedede;">EXTRA</th>
+                            <th style = "background-color: #dedede;">COLUMN_TYPE</th>
+                            <th style = "background-color: #dedede;">JAVA TYPE</th>
+                            <!-- <th style = "background-color: #dedede;">DATA TYPE</th> -->
+                            <th style = "background-color: #dedede;">CHAR MAX LEN</th>
+                            <th style = "background-color: #dedede;">NUM SCALE</th>
+                            <th style = "background-color: #dedede;">NULLABLE</th>
+                            <th style = "background-color: #dedede;">DEFAULT</th>
+                        
+                            <th style = "background-color: #dedede;">COMMENTS</th>
+                            <th style = "background-color: #dedede;">CHARSET</th>
+                            <th style = "background-color: #dedede;">COLLATION</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <th:block th:each="column, columnStat: ${tableEntry.value}">
+                          <tr data-widget = "expandable-table" aria-expanded="true" >
+                            <td th:text = "${column['COLUMN_NAME']}" ></td>
+                            <td th:text = "${column['COLUMN_KEY']}"></td>
+                            <td th:text = "${column['EXTRA']}"></td>
+                            <td th:text = "${column['COLUMN_TYPE']}"></td>
+                            <td th:text = "${column['PROGRAMMING_LANG_TYPE']}"></td>
+                            <!-- <td th:text = "${column['DATA_TYPE']}"></td> -->
+                            <td th:text = "${column['CHARACTER_MAXIMUM_LENGTH']}"></td>
+                            <td th:text = "${column['NUMERIC_SCALE']}"></td>
+                            <td th:text = "${column['IS_NULLABLE']}"></td>
+                            <td th:text = "${column['COLUMN_DEFAULT']}"></td>
+                         
+                            <td th:text = "${column['COLUMN_COMMENT']}"></td>
+                            <td th:text = "${column['CHARACTER_SET_NAME']}"></td>
+                            <td th:text = "${column['COLLATION_NAME']}"></td>
+                            
+                          </tr>
+                          <tr  th:class="${columnStat.index == 0} ? 'expandable-body d-none' : 'expandable-body d-none'" >
+                            <td colspan="13" >
+                              <div class="info-box" style = "position:relative;margin-bottom: 0px;">
+                                <!-- 아래 span에  bg-info 클래스를 를 주면 배경이 생김 -->
+                                <span class="info-box-icon"><i class="fa fa-code" aria-hidden="true" style = "font-size: 15px;"></i></span>
+                                <div class="info-box-content">
+                                  <span class="info-box-text">Escaped Tag String</span>
+                                  <span class="info-box-number" th:text = "${column['HTML_TAG']}"></span>
+                                </div>
+                               
+                              </div>
+                              <div class="info-box"  style = "position:relative;margin-bottom: 0px;">
+                                <!-- 아래 span에  bg-info 클래스를 를 주면 배경이 생김 -->
+                                <span class="info-box-icon"  ><i class="fa fa-tags" aria-hidden="true" style = "font-size: 15px;"></i></span>
+                                <div class="info-box-content" style = "margin-top: 0px;border: none;">
+                                  <span class="info-box-text">Raw Element</span>
+                                  <span class="info-box-number" th:utext ="${column['COLUMN_NAME_UPPER'] + '&nbsp;&nbsp;' + column['HTML_TAG']}"></span>
+                                </div>
+                              </div>
+
+                              <div class="info-box" style = "position:relative;height:133px">
+                                <!-- 아래 span에  bg-info 클래스를 를 주면 배경이 생김 -->
+                                <span class="info-box-icon"><i class="fa fa-tags" aria-hidden="true" style = "font-size: 15px;"></i></span>
+                                <div class="info-box-content" style = "width : 300px">
+                                  <span class="info-box-text">Styled Element by BootStrap</span>
+                                  <span class="info-box-number" th:utext ="${column['COL_WRAPPED_STYLED_HTML_TAG']}" style = "margin-left: -6px;">1,410</span>
+                                </div>
+                              </div>
+
+                              <!-- <span th:text = "${column['HTML_TAG']}" style = "display: inline-block;margin-left: 10px;"></span>
+                              <p style = "margin-top:-10px;margin-bottom: 20px;" th:utext ="${column['COLUMN_NAME_UPPER'] + '&nbsp;&nbsp;' + column['HTML_TAG']}">  </p> -->
+                            </td>
+                          </tr>
+                        </th:block>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+</div>
+</th:block>
+
+</html>
+

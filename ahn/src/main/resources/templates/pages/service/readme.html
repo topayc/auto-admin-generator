@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/layout}">
+<th:block layout:fragment="content">
+
+  <div class="content-wrapper" >
+    <section class="content" style="margin-top:10px">
+      <div class="container-fluid">
+        <div class = "row">
+        <div class="col-12 col-md-12">
+          <div class="card card-default">
+            <div class="card-header">
+              <p class="card-title" style = "font-size : 0.8rem">
+                <i class="fas fa-bullhorn"></i>
+                개발 개요
+              </p>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <div class="callout callout-danger">
+                <p style = "font-size : 0.9rem">개발 이유 및 현황</p>
+                <ul style = "font-size : 0.8rem">
+                  <li>백 오피스 및 어드민 개발에 매번 반복적인 작업에 지쳐 예전에 만들다 만 관리자 페이지 자동 생성을 재시작 </li>
+                  <li>이러한 서비스를 제공하는 데도 몇 개 안되지만 대부분 멀티테넌트 방식이며, 관련 소스를 다운받을 수 없음</li>
+                  <li>기본적으로 관리자 페이지 및 관련 기능의 자동 생성을 위한 것으로 DBMS별  데이타 베이스 메타데이타를 이용할 뿐, 데이타 베이스 자체에 조작에 대한 것은 다루지 않음
+                    (DB 조작은 전용 ERD나 관련 프로그램을 사용하세요)</li>
+                  <li>이 프로그램은 자체 디비를 전혀 사용하지 않으며, 전적으로 모든 데이타는 입력하신 정보에 근거합니다.</li>
+                  <li>따라서 사용하시는 별도의 디비 접속 정보 입력 과정이 필요하며, 이는 절대로 저장되거나 외부로 전송되지 않습니다.</li>
+                  <li>다만 현재 버젼은 개발 테스트용이기 때문에 개발 편의상 세션 유지를 위하여 작업 디렉토리에 JSON 형태로 저장되며 서버 중지 시 삭제됨</li>
+                  <li>위 저장은 단순히 세션 유지를 위한 것으로 서버가 중지되면 파일을 삭제되며, 또한 세션 상태에서도 새로운 프로젝트를 생성하면 기존 파일 및 세션은 제거되고 새로 생성됨</li>
+                </ul>
+              
+              </div>
+              <div class="callout callout-info">
+                <p style = "font-size : 0.9rem">동작 방식</p>
+                <ul style = "font-size : 0.8rem">
+                  <li>싫행 후 처음 접속시 입력한 연결 정보에 따라 메타데이터와 테이블 컬럼 정보를 모두 읽어와 캐시</li>
+                  <li>사용자의 입력 정보에 따라 달라지기 때문에 JPA 나 기존 쿼리 방식은 사용할 수 않음 </li>
+                  <li>쉬운 테스트을 위해 관련 데이타를 캐시에 저장하며, 이 정보는 종료하면 제거됨</li>
+                  <li>메타데이타와 테이블 컬럼 정보를 기반으로 관련 생성, 검색 페이지와 테이블 리스트를 실시간 렌더링</li>
+                </ul>
+             
+              </div>
+              <div class="callout callout-warning">
+                <p style = "font-size : 0.9rem">기능</p>
+                <ul style = "font-size : 0.8rem">
+                  <li>현재로서는 예전에 개발한 상태의 초기 버젼이라, 별로 기능은 없음</li>
+                  <li>구현된 기능은 실행하고 사이드바를 통해서 확인할 수 있음 </li>
+                  <li>조회된 테이블의 각 컬럼 타입 과 Commnets 에  따라서 관련 태그 생성 
+                      <ul>
+                        <li>컬럼타입이 문자, 숫자이고 PK이면  하나의 input 태그 생성, 단순 숫자 타입이라면 범위 태그 생성</li>
+                        <li>"text", "password", "checkbox", "radio", "button", "submit", "reset", 
+                          "file", "hidden", "email", "number", "date", "datetime-local", "month", "week", "time", 
+                          "color", "range", "search", "tel", "url","tel" 으로 컬럼의 주석이 정해진 경우 주석에 맞게 타입과 태그를 생성</li>
+                        <li>enum 의 경우 값=문자열, 값=문자열과 같은 식으로 주석 설정</li>
+                      </ul>
+
+                  </li>
+                  <li>현재 CSS는 부트스트랩만 가능함 </li>
+                </ul>
+              
+              
+              </div>
+              <div class="callout callout-success">
+                <p style = "font-size : 0.9rem">차후 진행 현황</p>
+                <ul style = "font-size : 0.8rem">
+                  <li>각 테이블에 대한 인서트 업데이트 기능 및 관련 이벤트 처리 기능</li>
+                  <li>조인 테이블 구성 기능을 통해 조인 테이블에 대한 위와 같은 상세 검색 및 조회 페이지 자동 생성</li>
+                  <li>조인 페이지 생성을 위한 드래그엔 드랍 방식으로 컴포넌트 제약관계 설정 및 이를 위한 관련 에디터</li>
+                  <li>각 타입의 파일 jsp, php, Tymleaf 파일 생성 기능 </li>
+                  <li>적용할 DBMS 확장( 현재는 Mysql 만 가능)</li>
+                  <li>적용할 CSS 확장</li>
+                  <li>채팅등 넣고 싶은 기능은 많은데 언제 할지 ^^^</li>
+                 
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+    
+      </div>
+
+
+      </div>
+    </section>
+  </div>
+
+</html>

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/layout}">
+<th:block layout:fragment="content">
+
+  <div class="content-wrapper mt-3" style="min-height: 1604.44px;">
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <form action="" method="" id = "search-form">
+              <div class="card card-primary shadow-none"><!-- 딛힌 상태로 두려면 클래스 추가 collapsed-card -->
+                <div class="card-header" style="background-color: #343a40;height:45px">
+                  <span class="card-title" style="font-size : 13px"
+                    th:text="${#strings.toUpperCase(selectedTable) + ' 상세 검색'}">상세 검색</span>
+
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="card-body light-text" style="padding-top: 7px;padding-bottom: 1px;">
+                  <div class="row" id="search_condition" style="white-space: pre;">
+                  </div>
+                </div>
+                <div class="card-footer" style="padding-left : 7px">
+                  <button type="submit" class="btn btn-primary btn-xs rounded-3" style="font-size : 0.7rem">SEARCH</button>&nbsp;
+                  <button type="reset" class="btn btn-primary btn-xs rounded-3"
+                    style="font-size : 0.7rem">&nbsp;RESET&nbsp;</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <button type="button" class="btn btn-success btn-xs rounded-3" style="font-size : 0.7rem"
+                    th:attr="onclick=|openInsertItemModal(event, this,'${selectedTable}')|">CREATE</button>&nbsp;
+                  <button type="button" class="btn btn-success btn-xs rounded-3" style="font-size : 0.7rem"
+                    th:attr="onclick=|openModifyItemModal(event, this,'${selectedTable}')|">MODIFY</button>
+                  <button type="button" class="btn btn-danger btn-xs rounded-3" style="font-size : 0.7rem"
+                    th:attr="onclick=|openRemoveItemModal(event, this,'${selectedTable}')|">DELETE</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card small card-success">
+              <div class="card-header" style="background-color: #343a40;">
+                <h3 class="card-title" style="font-size: 13px;white-space: pre;"
+                  th:utext="|${selectedTable.toUpperCase()}|"></h3>
+                <div class="card-tools"><button type="button" data-card-widget="collapse" class="btn btn-tool"><i
+                      class="fas fa-minus"></i></button></div>
+              </div>
+              <div class="card-body table-responsive p-2">
+                <table class="table text-nowrap table-bordered table-hover table-sm" 
+                  th:attr="'data-table'=${selectedTable}" style = "border: 1px solid #dee2e6;">
+                  <thead>
+                    <tr>
+                      <th th:text="act" style = "width:16px"> </th>
+                      <th th:each="columnMap : ${selectedTableColumnList}" th:text="${columnMap['COLUMN_NAME']}"> </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <th:block th:each="valueMap : ${dataList}">
+                      <tr th:data-item-id="${valueMap.get(primaryColumn)}" th:data-item = "${valueMap}" class="data-row">
+                        <td > 
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            
+                          </div>
+
+                        </td>
+                        <td th:each="valueEntry : ${valueMap}" th:text="${valueEntry['value']}"> </td>
+                      </tr>
+                    </th:block>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 아이템 인서트 수정 작업 모달 -->
+  <div class="container-fluid modal fade modal-dialog-centered" id="table-insert-update-modal" style="display: none;"
+    aria-hidden="true">
+    <!-- <div class="modal-dialog modal-lg"> -->
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #343a40;color : white;height:50px">
+          <h6 class="modal-title">Default Modal</h6>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row content"></div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary btn-sm" id="modal-action-ok" data-dismiss="modal">제출</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul id="prettyContextMenu" class="pretty-context-menu">
+  </ul>
+
+
+  <style>
+    tr.active,
+    tr.active>td {
+      background-color: #4ba3eb !important;
+      /* 원하는 색상으로 변경 */
+      color: white;
+    }
+
+    /* ✨ 예쁜 커스텀 컨텍스트 메뉴 스타일 ✨ */
+    .pretty-context-menu {
+      position: fixed;
+      background-color: #ffffff;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: none;
+      z-index: 1000;
+      border-radius: 8px;
+      overflow: hidden;
+      min-width: 10%;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    /* 메뉴 헤더 스타일 */
+    .pretty-context-menu .menu-header {
+      padding: 10px 15px;
+      background-color: #f0f8ff;
+      /* 연한 파란색 배경 */
+      color: #007bff;
+      /* 파란색 텍스트 */
+      font-weight: bold;
+      font-size: 0.9em;
+      border-bottom: 1px solid #e2e6ea;
+      /* 아래쪽 테두리 */
+    }
+
+    .pretty-context-menu li {
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 0.8em;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .pretty-context-menu li:last-child {
+      border-bottom: none;
+    }
+
+    .pretty-context-menu li:hover {
+      background-color: #e9f5ff;
+      color: #007bff;
+      font-weight: bold
+    }
+
+    /* 구분선 스타일 */
+    .pretty-context-menu .menu-separator {
+      border-top: 1px solid #dee2e6;
+      margin: 5px 0;
+    }
+
+    /* 애니메이션 키프레임 */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* row-animation.css */
+    .animate-flash {
+      animation: flash 0.6s 3;
+    }
+    @keyframes flash {
+      0%   { background-color: #ffffff !important;border : 2px dashed orange;}
+      20%  { background-color: #ffeb3b !important; }
+      40%  { background-color: #fff176 !important; }
+      60%  { background-color: #fff !important; }
+      100% { background-color: #fff !important; }
+    }
+    .shrinking {
+      transition: max-height 0.3s, padding 0.6s, opacity 0.3s;
+      max-height: 0px !important;
+      opacity: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+
+
+  </style>
+
+  <script src="/js/input_tag_generator.min.js"></script>
+  
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+
+    // 타임리프 리스트를 JS 변수에 할당
+    var selectedTableColumnList = /*[[${selectedTableColumnList}]]*/[];
+    var selectedTable = /*[[${selectedTable}]]*/[];
+    var dataList = /*[[${dataList}]]*/[];
+
+    //상세 검색 버튼 눌렀을 때 이벤트 리스너, 
+    document.querySelector("#search-form").addEventListener("submit", function(event){
+      event.preventDefault(); // 기본 제출 동작 차단
+      const form = event.target;
+      //FormData 객체로 폼 데이터 수집 (name 속성 기준)
+      const rawFormData = new FormData(form);
+    
+      // 값이 없거나  공백인 키는 제거 
+      const cleanedFormData = new FormData(); // 필터링한 새 FormData 만들기
+      
+      for (const [key, value] of rawFormData.entries()) {
+        // 파일이거나 값이 비어있지 않을 때에만 추가
+        if (value instanceof File && value.name // 파일이 있고 이름이 존재
+          || typeof value === "string" && value.trim() !== "" // 문자열이 비어 있지 않음
+        ) {
+          cleanedFormData.append(key, value);
+        }
+      }
+      const jsonObj = Object.fromEntries(cleanedFormData);
+      console.log(jsonObj);
+    });
+
+    function openInsertItemModal(event, elem, tableName) {
+       /*버튼 텍스트 수정으로 변경*/
+      document.querySelector("#table-insert-update-modal").querySelector("#modal-action-ok").innerHTML = "생성하기";
+      $('#table-insert-update-modal').modal();
+      $('#table-insert-update-modal .modal-title').html(tableName.toUpperCase() + " 추가");
+
+      //var param = {tableName : tableName};
+      //$('#table-insert-update-modal .content').load("/get_form?"+ toQueryString(param));
+      var inputTagGenerator = new InputTagGenerator(
+        selectedTable,
+        selectedTableColumnList,
+        "#table-insert-update-modal .content",
+        "col-sm-6 col-md-4 col-12",
+        "CREATE");
+      inputTagGenerator.mount();
+
+      const button = document.querySelector('#table-insert-update-modal #modal-action-ok');
+      button.addEventListener('click', function () {
+        alert('서버로 전송');
+      }, { once: true });
+    }
+
+    function openModifyItemModal(event, elem, tableName) {
+      
+      const checkedBox = document.querySelector('table').querySelector('input[type="checkbox"]:checked');
+      if (!checkedBox) {
+        alert("수정하실 아이템을 선택해주세요");
+        return;
+      }
+      const itemId = checkedBox.closest('tr').dataset.itemId;
+      const item = dataList.find(item => item.id == itemId);
+      if (!item) {
+        alert("오류가 발생했습니다.");
+        return;
+      }  
+    
+      $('#table-insert-update-modal').modal();
+      $('#table-insert-update-modal .modal-title').html(tableName.toUpperCase() + " 수정");
+
+      //var param = {tableName : tableName};
+      //$('#table-insert-update-modal .content').load("/get_form?"+ toQueryString(param));
+      var inputTagGenerator = new InputTagGenerator(
+        selectedTable,
+        selectedTableColumnList,
+        "#table-insert-update-modal .content",
+        "col-sm-6 col-md-4 col-12",
+        "UPDATE");
+      inputTagGenerator.mount();
+      /* 테이블에서 체크된 row 를 가져와서 id 추출*/
+    
+      const button = document.querySelector('#table-insert-update-modal #modal-action-ok');
+      button.addEventListener('click', function () {
+        alert('서버로 전송');
+      }, { once: true });
+      
+      /* 버튼 텍스트 수정으로 변경 */
+      document.querySelector("#table-insert-update-modal").querySelector("#modal-action-ok").innerHTML = "수정하기";
+
+      console.log(item);
+      /* 위에서 찾은 item 을 다이얼로의 인풋 박스에서 자동 입력*/
+      for (const key in item) {
+        if (item.hasOwnProperty(key)){
+          const targetElem = document.querySelector("#table-insert-update-modal").querySelector(`#${selectedTable}_${key}`);
+          if (!targetElem) continue;
+          targetElem.value = item[key];
+          //console.log("==========")
+          //console.log(`#${selectedTable}_${key}`);
+          //console.log(targetElem);
+          //console.log("===========")
+        }
+      }
+
+    }
+
+    function openRemoveItemModal(event, elem, tableName) {
+      const deleteItemElement = document.querySelector('table').querySelector('input[type="checkbox"]:checked');
+      if (!deleteItemElement) {
+        alert('삭제하실 아이템을 선택해주세요');
+        return;
+      }
+      const deleteItemId = deleteItemElement.closest('tr').dataset.itemId;
+      var delOk = confirm(`${selectedTable} ${deleteItemId} 을 삭제하시겠습니까?`);
+      if (!delOk) return;
+      
+      fetch(`/api/items/${deleteItemId}?tb=${selectedTable}`, {
+        method : 'DELETE'
+      })
+      .then(res => {
+        if (!res.ok){
+          throw new Error('삭제 실패');
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log('삭제 성공:', data);
+
+        /*삭제한 행 데이타를 전치 데이타 리스트에서 제거*/
+        datalist = dataList.filter(data => data.id !== deleteItemId);
+        
+        const deleteRow = deleteItemElement.closest('tr');
+         // 높이 고정 (트랜지션이 정상 동작하려면!)
+         deleteRow.style.height = deleteRow.offsetHeight + "px";
+
+        // 1) 반복 반전(색 바꾸기) 애니메이션
+        deleteRow.classList.add("animate-flash");
+        deleteRow.addEventListener("animationend", function handler1(){
+          deleteRow.classList.remove('animate-flash');
+          deleteRow.classList.add('shrinking');
+          deleteRow.addEventListener("transitionend", function handler2() {
+          // 3) shrinking 트랜지션 종료시 실제로 dom에서 제거
+          deleteRow.remove();
+          }, {once: true}); // transitionend 핸들러는 1회만!
+        }, {once: true}); // animationend 핸들러는 1회만!
+      })
+      .catch(err => {
+        console.error('에러 발생:', err);
+      });
+
+    }
+
+    //객체를 쿼리 스트링으로 변환
+    function toQueryString(params) {
+      return new URLSearchParams(params).toString();
+    }
+
+    function getFormData (selector){
+      const form = document.querySelector(selector);
+      const formDataObj = Object.fromEntries(new FormData(form));
+
+      console.log(formDataObj);
+      return formDataObj;
+    }
+
+  </script>
+
+  <script th:inline="javascript">
+
+    let currentClickedItemId = null; // 현재 클릭된 아이템의 ID를 저장할 변수
+
+    // DOMContentLoaded 이벤트 리스너 추가
+    var inputTagGenerator = new InputTagGenerator(
+      selectedTable,
+      selectedTableColumnList,
+      "#search_condition",
+      "col-sm-4 col-md-2 col-12",
+      "VIEW");
+    inputTagGenerator.mount();
+    //console.log(selectedTableColumnList);
+    //console.log(selectedTable);
+    console.log(dataList);
+
+    //우클릭시 뜨는 창의 메뉴 
+  
+
+    const table = document.querySelector('table');
+    const rows = table.querySelectorAll('tr');
+
+    //table.addEventListener('click', function (event) {
+      //event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
+      //event.stopPropagation();
+      //const targetRow = event.target.closest('tr');
+      //if (!targetRow) return;
+      // 모든 tr의 active 클래스 제거
+      //table.querySelectorAll('tr').forEach(r => r.classList.remove('active'));
+      // 클릭된 tr에 active 클래스 추가
+      //targetRow.classList.add('active');
+      //prettyContextMenu.style.display = 'none';
+
+    //});
+
+    table.addEventListener('contextmenu', function (event) {
+
+      event.preventDefault(); // 기본 우클릭 메뉴 방지 (필요시)
+      event.stopPropagation();
+
+      const fixedMenuItems = [
+        // { label: '생성', action: 'create' },
+        { label: 'More Details', action: 'more_details' , iconClass : "fas fa-plus-square"},
+        { label: 'Edit', action: 'edit', iconClass : "fas fa-edit" },
+        { label: 'Delete', action: 'delete', iconClass : "fas fa-minus-circle" },
+        { label: 'Select', action: 'select', iconClass : "fas fa-check-square" }
+
+      ];
+
+      let row = event.target.closest('tr');
+      if (row && row.rowIndex !== 0) {
+        // 해당 행 안의 checkbox를 찾음
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        if (checkbox ) {
+          if (checkbox.checked == true){
+            fixedMenuItems[3].label = "Deselect";
+            fixedMenuItems[3].action  = "deselect";
+            fixedMenuItems[3].iconClass  = "far fa-square";
+          }
+        }
+      }
+
+     
+      prettyContextMenu.style.display = 'none';
+
+      const targetRow = event.target.closest('tr');
+      if (!targetRow) return;
+      // 모든 tr의 active 클래스 제거
+      table.querySelectorAll('tr').forEach(r => r.classList.remove('active'));
+
+      // 클릭된 tr에 active 클래스 추가
+      targetRow.classList.add('active');
+
+      currentClickedItemId = targetRow.dataset.itemId;
+      const itemName = this.dataset.itemName; // 클릭된 아이템의 이름 가져오기
+      const customMenuJson = this.dataset.customMenu;
+
+      prettyContextMenu.innerHTML = ''; // 메뉴 내용 초기화
+
+      //1. 메뉴 헤더 추가 ✨
+      const menuHeader = document.createElement('div');
+      menuHeader.classList.add('menu-header');
+      menuHeader.textContent = `[${selectedTable}  ${currentClickedItemId}] Menu` || '메뉴'; // 클릭한 아이템의 이름 또는 기본값
+      prettyContextMenu.appendChild(menuHeader);
+
+      // 2. 고정 메뉴 항목 추가 (헤더 다음에 추가)
+      fixedMenuItems.forEach(menuItem => {
+        const li = document.createElement('li');
+        
+        const i = document.createElement("i");
+        i.setAttribute('aria-hidden', 'true');
+        i.className = menuItem.iconClass;
+        i.style.marginRight = "8px";
+        li.appendChild(i);
+       
+        const span = document.createElement("span");
+        span.textContent = menuItem.label;
+        span.dataset.action = menuItem.action;
+        span.dataset.itemId = currentClickedItemId;
+        li.appendChild(span);
+
+        prettyContextMenu.appendChild(li);
+
+        li.addEventListener("click", function(e){
+          e.stopPropagation();
+          switch (menuItem.action){
+            case "more_details":
+            break;
+            
+            case "edit":
+              table.querySelectorAll('input[type="checkbox"]').forEach(checkbox=>{
+                checkbox.checked = false;
+              });
+              const checkbox = row.querySelector('input[type="checkbox"]');
+              if (checkbox) {
+                checkbox.checked =  true; // 선택 상태로 변경
+              }
+              openModifyItemModal(e, this,selectedTable);
+              break;
+            
+            case "delete":
+              table.querySelectorAll('input[type="checkbox"]').forEach(checkbox=>{
+                checkbox.checked = false;
+              });
+              const checkbox1 = row.querySelector('input[type="checkbox"]');
+              if (checkbox1) {
+                checkbox1.checked = true;
+                setTimeout(function(){
+                  openRemoveItemModal(e, this,selectedTable);
+                }, 50);
+                
+              }
+              break;
+            
+            case "select":
+             let row1 = event.target.closest('tr');
+             if (row && row.rowIndex !== 0) {
+              // 해당 행 안의 checkbox를 찾음
+              const checkbox = row.querySelector('input[type="checkbox"]');
+              //row.classList.add("active");
+              if (checkbox) {
+                checkbox.checked =  true; // 선택 상태로 변경
+              }
+              
+             }
+             break;
+
+              
+            case "deselect":
+             let row2 = event.target.closest('tr');
+             if (row && row.rowIndex !== 0) {
+              // 해당 행 안의 checkbox를 찾음
+              const checkbox = row.querySelector('input[type="checkbox"]');
+             checkbox.checked =  false // 선택 상태로 변경
+            }
+            break;
+
+          }
+          row.classList.remove('active');
+          prettyContextMenu.style.display = 'none';
+        })
+      });
+
+      // 3. 커스텀 메뉴 항목 추가 (있을 경우)
+      let customMenuItems = [
+        // { label: '생성', action: 'create' },
+        { label: 'Custom Action1', action: 'more_details' },
+        { label: 'Custom Action2', action: 'edit' },
+        { label: 'Custom Action3', action: 'delete' }
+
+      ];
+      try {
+        //customMenuItems = JSON.parse(customMenuJson || '[]');
+      } catch (e) {
+        console.error('Failed to parse custom menu JSON:', e);
+      }
+
+      if (customMenuItems.length > 0) {
+        const separator = document.createElement('li');
+        separator.classList.add('menu-separator');
+        //prettyContextMenu.appendChild(separator);
+
+        customMenuItems.forEach(menuItem => {
+          const li = document.createElement('li');
+          li.textContent = menuItem.label;
+          li.dataset.action = menuItem.action;
+          li.dataset.itemId = currentClickedItemId;
+         
+          prettyContextMenu.appendChild(li);
+        });
+      }
+
+      prettyContextMenu.style.visibility = 'hidden';
+      prettyContextMenu.style.display = 'block';
+      prettyContextMenu.style.left = '-9999px';
+      prettyContextMenu.style.top = '-9999px';
+      
+
+      const menuWidth = prettyContextMenu.offsetWidth;
+      const menuHeight = prettyContextMenu.offsetHeight;
+      
+      const winWidth = window.innerWidth;
+      const winHeight = window.innerHeight;
+
+      let x = event.clientX;
+      let y = event.clientY;
+      
+       if (x + menuWidth > winWidth) {
+        x = x - menuWidth;
+        if (x < 0) x = 0; // 왼쪽 넘어가는 것도 방지
+      }
+
+      if (y + menuHeight > winHeight) {
+        y = y - menuHeight;
+        if (y < 0) y = 0; // 위쪽 넘어가는 것도 방지
+      }
+
+      prettyContextMenu.style.animation = "none";  // 초기화
+      prettyContextMenu.offsetHeight;              // 리플로우 유도
+      prettyContextMenu.style.animation = "fadeIn 0.2s ease"; // 다시 적용
+
+      prettyContextMenu.style.left = x + 'px';
+      prettyContextMenu.style.top = y  + 'px';
+      prettyContextMenu.style.display = 'block';
+      prettyContextMenu.style.visibility = 'visible';
+    });
+
+
+    document.addEventListener('click', function () {
+      prettyContextMenu.style.display = 'none';
+      rows.forEach(r => r.classList.remove('active'));
+    });
+
+
+
+
+
+  </script>
+</th:block>
+
+</html>

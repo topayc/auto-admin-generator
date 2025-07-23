@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/layout}">
+<th:block layout:fragment="content">
+
+
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <!-- Content Header (Page header) -->
+  
+
+      <div class="row"  style="margin-top:10px">
+        <div class="col-12 small">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Default MetaData Filed Info</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body table-responsive p-0">
+              <table class="table table-bordered table-hover table-sm" style = "width:100%">
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 15%">Table Name</th>
+                    <th style="width: 20%">Field Name</th>
+                    <th style="width: 40%">Example value</th>
+                    <th style="width: 30%">Field Desc</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <tr th:each="entry, stat : ${summaryMap}">
+                    <td th:text="${stat.index} + 1">1.</td>
+                    <td>[TABLE]</td>
+                    <td th:text="${entry.key}"></td>
+                    <td th:text="${entry.value}"></td>
+                    <td th:text="Desc"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</th:block>
+</html>
