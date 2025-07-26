@@ -238,7 +238,7 @@
     
       // 값이 없거나  공백인 키는 제거 
       const cleanedFormData = new FormData(); // 필터링한 새 FormData 만들기
-      
+      cleanedFormData.append("table", selectedTable);
       for (const [key, value] of rawFormData.entries()) {
         // 파일이거나 값이 비어있지 않을 때에만 추가
         if (value instanceof File && value.name // 파일이 있고 이름이 존재
@@ -249,6 +249,11 @@
       }
       const jsonObj = Object.fromEntries(cleanedFormData);
       console.log(jsonObj);
+      if (Object.keys(jsonObj).length == 1){
+        alert("검색 파라미터가 한개도 설정되지 않았습니다");
+        return;
+      }
+      alert("서버에 검색 요청 전송");
     });
 
     function openInsertItemModal(event, elem, tableName) {
