@@ -22,6 +22,8 @@ import com.databasemeta.ahn.service.MainService;
 import com.databasemeta.ahn.service.SessionManager;
 import com.databasemeta.ahn.session.SessionInfo;
 import com.databasemeta.ahn.session.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -35,7 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/service")
-public class AdminJeneratorController {
+@io.swagger.v3.oas.annotations.Hidden
+public class MetaController {
   @Value("${spring.datasource.url}")
   private String url;
 
@@ -220,10 +223,10 @@ public class AdminJeneratorController {
     this.mainService.mergeConstraints(sessionInfo, tableMap);
     sessionInfo.getUser().setMetadataTableMap(tableMap);
 
-    // ObjectMapper mapper = new ObjectMapper();
-    // mapper.enable(SerializationFeature.INDENT_OUTPUT); 
-    // String json2 = mapper.writeValueAsString(tableMap);
-    // System.out.println(json2);
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.enable(SerializationFeature.INDENT_OUTPUT); 
+    String json2 = mapper.writeValueAsString(tableMap);
+    System.out.println(json2);
    
     return "redirect:/service/dashboard/" + sessionInfo.getUser().getUuid();
   }

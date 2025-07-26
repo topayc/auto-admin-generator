@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
+@io.swagger.v3.oas.annotations.Hidden
 @RequiredArgsConstructor
 @Slf4j
 public class IndexController {

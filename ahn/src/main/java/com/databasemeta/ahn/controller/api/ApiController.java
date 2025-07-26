@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
+
 public class ApiController {
   private final MainService mainService;
   private final SessionManager sessionManager;
