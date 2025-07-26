@@ -1,4 +1,4 @@
-package com.databasemeta.ahn.controller.view.admingen;
+package com.databasemeta.ahn.controller.view;
 
 import java.util.ArrayList;
 import java.util.List;

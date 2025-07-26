@@ -1,4 +1,4 @@
-package com.databasemeta.ahn.controller.view.admingen;
+package com.databasemeta.ahn.deprecated;
 
 import java.util.stream.Collectors;
 
@@ -14,12 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@Deprecated
-/**
- * @deprecated 
- * This class is deprecated due to poor performance by using cient rendering
- * Use {@link #newMethod()} instead.
- */
+
 public class FormController {
   
   public final SessionManager sessionManager;

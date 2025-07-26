@@ -213,6 +213,12 @@ public class MainService {
               String columnComments = rs.getString("COLUMN_COMMENT");
               String extra = rs.getString("EXTRA");
 
+              System.out.println("column_name : " +columnName);
+              System.out.println("column_key : " +columnKey);
+              System.out.println("column_type : " + columnType);
+              System.out.println("data_type : " + dataType);
+              System.out.println("");
+              
               columnMap.put("COLUMN_NAME", columnName);
               columnMap.put("COLUMN_NAME_UPPER", columnName.toUpperCase());
               columnMap.put("COLUMN_TYPE", columnType);

@@ -28,4 +28,12 @@ public class ColumnInfo {
     public String columnComment;
     public String generationExpression;
     public Integer srsId;
+
+    public String constraintName;
+    public String constraintType;
+    public String referenceTable;
+    public String referenceColumn;
+
+    public String referencedMeTable;
+    public String referencedMeColumn;
 }

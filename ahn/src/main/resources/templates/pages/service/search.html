@@ -26,15 +26,15 @@
                   </div>
                 </div>
                 <div class="card-footer" style="padding-left : 7px">
-                  <button type="submit" class="btn btn-primary btn-xs rounded-3" style="font-size : 0.7rem">SEARCH</button>&nbsp;
+                  <button type="submit" class="btn btn-primary btn-xs rounded-3" style="font-size : 0.7rem">검색</button>&nbsp;
                   <button type="reset" class="btn btn-primary btn-xs rounded-3"
-                    style="font-size : 0.7rem">&nbsp;RESET&nbsp;</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    style="font-size : 0.7rem">&nbsp;초기화&nbsp;</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <button type="button" class="btn btn-success btn-xs rounded-3" style="font-size : 0.7rem"
-                    th:attr="onclick=|openInsertItemModal(event, this,'${selectedTable}')|">CREATE</button>&nbsp;
+                    th:attr="onclick=|openInsertItemModal(event, this,'${selectedTable}')|">생성</button>&nbsp;
                   <button type="button" class="btn btn-success btn-xs rounded-3" style="font-size : 0.7rem"
-                    th:attr="onclick=|openModifyItemModal(event, this,'${selectedTable}')|">MODIFY</button>
+                    th:attr="onclick=|openModifyItemModal(event, this,'${selectedTable}')|">수정</button>
                   <button type="button" class="btn btn-danger btn-xs rounded-3" style="font-size : 0.7rem"
-                    th:attr="onclick=|openRemoveItemModal(event, this,'${selectedTable}')|">DELETE</button>
+                    th:attr="onclick=|openRemoveItemModal(event, this,'${selectedTable}')|">삭제</button>
                 </div>
               </div>
             </form>
@@ -55,8 +55,9 @@
                   th:attr="'data-table'=${selectedTable}" style = "border: 1px solid #dee2e6;">
                   <thead>
                     <tr>
-                      <th th:text="act" style = "width:16px"> </th>
+                      <th style = "width:16px"> </th>
                       <th th:each="columnMap : ${selectedTableColumnList}" th:text="${columnMap['COLUMN_NAME']}"> </th>
+                      <th th:text="Action" style = "width:30px"> </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -65,11 +66,19 @@
                         <td > 
                           <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                            
                           </div>
 
                         </td>
                         <td th:each="valueEntry : ${valueMap}" th:text="${valueEntry['value']}"> </td>
+                        <td>&nbsp;
+                          <i class = "fas fa-edit" th:attr="onclick=|openModifyItemModal(event, this,'${selectedTable}')|" title = "수정"></i>&nbsp;
+                          <i class = "fas fa-minus-circle" th:attr="onclick=|openRemoveItemModal(event, this,'${selectedTable}')|" title = "삭제"></i>
+                           <!-- <button type="button" class="btn btn-success btn-xs rounded-3" style="font-size : 0.7rem"
+                              th:attr="onclick=|openModifyItemModal(event, this,'${selectedTable}')|">수정</button>&nbsp;
+                           <button type="button" class="btn btn-danger btn-xs rounded-3" style="font-size : 0.7rem"
+                              th:attr="onclick=|openRemoveItemModal(event, this,'${selectedTable}')|">삭제</button>&nbsp; -->
+
+                        </td>
                       </tr>
                     </th:block>
                     </tr>
@@ -459,7 +468,7 @@
       //1. 메뉴 헤더 추가 ✨
       const menuHeader = document.createElement('div');
       menuHeader.classList.add('menu-header');
-      menuHeader.textContent = `[${selectedTable}  ${currentClickedItemId}] Menu` || '메뉴'; // 클릭한 아이템의 이름 또는 기본값
+      menuHeader.textContent = `[${selectedTable}]  ${currentClickedItemId}` || '메뉴'; // 클릭한 아이템의 이름 또는 기본값
       prettyContextMenu.appendChild(menuHeader);
 
       // 2. 고정 메뉴 항목 추가 (헤더 다음에 추가)
