@@ -13,4 +13,21 @@ public class Util {
     return "";
   }
 
+  public static String extractDbName(String jdbcUrl) {
+    // 정규식으로 DB 이름을 추출
+    String pattern = "jdbc:mysql://[^/?]+/([^?]+)";
+    java.util.regex.Pattern r = java.util.regex.Pattern.compile(pattern);
+    java.util.regex.Matcher m = r.matcher(jdbcUrl);
+    if (m.find()) {
+        String dbWithParams = m.group(1);
+        // 파라미터 부분을 제거
+        int paramIdx = dbWithParams.indexOf('?');
+        if (paramIdx >= 0) {
+            return dbWithParams.substring(0, paramIdx);
+        }
+        return dbWithParams;
+    }
+    return null;
+}
+
 }

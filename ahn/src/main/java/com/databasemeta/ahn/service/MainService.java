@@ -15,6 +15,8 @@ import javax.sql.DataSource;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.databasemeta.ahn.mapper.RawColumnNameMapMapper;
 import com.databasemeta.ahn.session.SessionInfo;
 import com.databasemeta.ahn.util.MySqlTypeMapper;
 import com.databasemeta.ahn.util.MysqlTypeToHtmlTag;
@@ -63,7 +65,7 @@ public class MainService {
   public Map<String, ArrayList<Map<String, String>>> getDatabaseMetaData(DataSource dataSource) throws Exception {
     try (Connection conn = dataSource.getConnection()) {
       DatabaseMetaData metaData = conn.getMetaData();
-
+   
       StringBuilder tableDataBuilder = new StringBuilder();
       Map<String, ArrayList<Map<String, String>>> tableMap = new HashMap<>();
 
@@ -183,12 +185,13 @@ public class MainService {
   public Map<String, ArrayList<Map<String, String>>> getMysqlDatabaseMetaData(DataSource dataSource) throws Exception {
     try (Connection conn = dataSource.getConnection()) {
       DatabaseMetaData metaData = conn.getMetaData();
-
+      String dbName = Util.extractDbName(metaData.getURL());
+     
       StringBuilder tableDataBuilder = new StringBuilder();
       Map<String, ArrayList<Map<String, String>>> tableMap = new HashMap<>();
 
       // 모든 테이블 목록 가져오기
-      try (ResultSet tablesSet = metaData.getTables("demo", null, "%", new String[] { "TABLE" })) {
+      try (ResultSet tablesSet = metaData.getTables(dbName, null, "%", new String[] { "TABLE" })) {
         while (tablesSet.next()) {
           String tableName = tablesSet.getString("TABLE_NAME");
           tableDataBuilder.append(tableName + " 테이블</br>");
@@ -197,7 +200,7 @@ public class MainService {
 
           String sql = "SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? ORDER BY ORDINAL_POSITION";
           try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, "demo");
+            ps.setString(1, dbName);
             ps.setString(2, tableName);
             ResultSet rs = ps.executeQuery();
 
@@ -458,9 +461,11 @@ public class MainService {
 
     String query = "select * from " + tableName;
     Jdbi jdbi = Jdbi.create(dataSource);
-    List<Map<String, Object>> mapList = jdbi.withHandle(handle -> handle.createQuery(query)
-        .mapToMap()
-        .list());
+    List<Map<String, Object>> mapList = jdbi.withHandle(handle -> 
+    handle.createQuery(query)
+          .map(new RawColumnNameMapMapper())
+          .list()
+    );
 
     return mapList;
   }

@@ -50,7 +50,7 @@
                 <div class="card-tools"><button type="button" data-card-widget="collapse" class="btn btn-tool"><i
                       class="fas fa-minus"></i></button></div>
               </div>
-              <div class="card-body table-responsive p-2">
+              <div class="card-body table-responsive p-0">
                 <table class="table text-nowrap table-bordered table-hover table-sm" 
                   th:attr="'data-table'=${selectedTable}" style = "border: 1px solid #dee2e6;">
                   <thead>
@@ -64,9 +64,9 @@
                     <th:block th:each="valueMap : ${dataList}">
                       <tr th:data-item-id="${valueMap.get(primaryColumn)}" th:data-item = "${valueMap}" class="data-row">
                         <td > 
-                          <div class="form-check">
+                          <!-- <div class="form-check"> -->
                             <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                          </div>
+                          <!-- </div> -->
 
                         </td>
                         <td th:each="valueEntry : ${valueMap}" th:text="${valueEntry['value']}"> </td>
@@ -228,6 +228,10 @@
     var selectedTableColumnList = /*[[${selectedTableColumnList}]]*/[];
     var selectedTable = /*[[${selectedTable}]]*/[];
     var dataList = /*[[${dataList}]]*/[];
+    var primaryColumn = /*[[${primaryColumn}]]*/[];
+ 
+    console.log("data list");
+    console.log(dataList);
 
     //상세 검색 버튼 눌렀을 때 이벤트 리스너, 
     document.querySelector("#search-form").addEventListener("submit", function(event){
@@ -286,7 +290,7 @@
         return;
       }
       const itemId = checkedBox.closest('tr').dataset.itemId;
-      const item = dataList.find(item => item.id == itemId);
+      const item = dataList.find(item => item[primaryColumn]== itemId);
       if (!item) {
         alert("오류가 발생했습니다.");
         return;

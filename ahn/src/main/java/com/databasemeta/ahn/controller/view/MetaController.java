@@ -24,6 +24,7 @@ import com.databasemeta.ahn.session.SessionInfo;
 import com.databasemeta.ahn.session.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -146,10 +147,10 @@ public class MetaController {
     String uuid = UUID.randomUUID().toString();
     DatabaseConnectionInfo connectionInfo = new DatabaseConnectionInfo();
     connectionInfo.setUuid(uuid);
-    connectionInfo.setProjectName("");
-    connectionInfo.setUrl(this.url);
+    connectionInfo.setProjectName("First Project");
+    connectionInfo.setUrl("jdbc:mysql://localhost:3306/returnp_db?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true");
     connectionInfo.setUserName(this.userName);
-    connectionInfo.setPassword(this.password);
+    connectionInfo.setPassword("a98310");
     connectionInfo.setDriverClassName("com.mysql.cj.jdbc.Driver");
     connectionInfo.setCss("bootstrap");
     connectionInfo.setPassword("a98310");
@@ -242,6 +243,8 @@ public class MetaController {
         return "redirect:/service/create";
       }
       
+      ObjectMapper mapper = new ObjectMapper();
+      System.out.println("서치 요청함");
       List<Map<String, Object>> dataMapList = this.mainService.getDataList(request, table);
       
       //전체 테이블 맵리스트를 반환
@@ -273,13 +276,17 @@ public class MetaController {
       //System.out.println(TagGenerator.generateListTag(table, columnHeaderList, dataMapList));
       // System.err.println(columnHeaderList);
 
-      // ObjectMapper mapper = new ObjectMapper();
-      // mapper.registerModule(new JavaTimeModule());
-      // mapper.enable(SerializationFeature.INDENT_OUTPUT); 
-      // String json2 = mapper.writeValueAsString( dataMapList);
-      // System.out.println(json2);
-      // System.out.println();
-      // System.out.println();
+     
+      mapper.registerModule(new JavaTimeModule());
+      mapper.enable(SerializationFeature.INDENT_OUTPUT); 
+      String json2 = mapper.writeValueAsString( dataMapList);
+      System.out.println(json2);
+      System.out.println();
+      System.out.println();
+
+      System.out.println("====================================================");
+      json2 = mapper.writeValueAsString(sessionInfo.getUser().getMetadataTableMap().get(table));
+      System.out.println(json2);
       // System.out.println(resultList.get(0).get("COLUMN_NAME"));
       // for (Object key : dataMapList.get(0).keySet()){
       //   System.out.println(key + " : " + key.getClass().getName());
