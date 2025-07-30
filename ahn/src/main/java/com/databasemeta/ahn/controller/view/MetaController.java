@@ -258,6 +258,7 @@ public class MetaController {
       model.addAttribute("selectedTable", table);
       model.addAttribute("dataList", dataMapList);
       
+      
       // 해당 테이블 에서 primary 키를 뽑아서 모델에 전달
       List<Map<String, String>> resultList = sessionInfo.getUser().getMetadataTableMap().get(table).stream()
         .filter(m-> m.get("COLUMN_KEY").equalsIgnoreCase("PRI"))
